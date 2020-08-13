@@ -1,7 +1,10 @@
-package it.uniud.relevancelist.problem;
+package it.uniud.relevancelist.operators;
 
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+
+import it.uniud.relevancelist.problem.RLBinaryProblem;
+import it.uniud.relevancelist.problem.RLBinarySolution;
 
 import java.util.ArrayList;
 import java.util.List;

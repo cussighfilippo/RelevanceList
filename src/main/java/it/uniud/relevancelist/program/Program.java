@@ -8,8 +8,8 @@ import java.util.List;
 
 import it.uniud.relevancelist.algorithm.RLNSGAII;
 import it.uniud.relevancelist.algorithm.RLNSGAIIBuilder;
-import it.uniud.relevancelist.problem.BinaryCrossover;
-import it.uniud.relevancelist.problem.BinaryMutation;
+import it.uniud.relevancelist.operators.BinaryCrossover;
+import it.uniud.relevancelist.operators.BinaryMutation;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
 import it.uniud.relevancelist.problem.RLBinarySolution;
 import it.uniud.relevancelist.problem.RLBinarySolutionFactory;

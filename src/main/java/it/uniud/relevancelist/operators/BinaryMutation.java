@@ -1,4 +1,4 @@
-package it.uniud.relevancelist.problem;
+package it.uniud.relevancelist.operators;
 
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.uma.jmetal.operator.mutation.MutationOperator;
