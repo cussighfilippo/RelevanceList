@@ -42,7 +42,7 @@ public class Program
     {
 
     	
-    	//cmdline  java -jar .\target\RelevanceList-1.0-SNAPSHOT.jar 50 50000 0.8 0.3 50 1 0.8957 6 0.00005 10 "avgPrecision" "filepath" 0.1
+    	//cmdline  java -jar .\target\RelevanceList-1.0-SNAPSHOT.jar 50 50000 0.8 0.3 50 1 0.8957 6 0.00005 10 "avgPrecision" "risultati.csv" 0.1
 		// Lettura dei parametri
 		
 		if(args.length != 13){
