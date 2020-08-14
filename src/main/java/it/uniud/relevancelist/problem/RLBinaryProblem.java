@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import org.uma.jmetal.problem.AbstractGenericProblem;
 import org.uma.jmetal.problem.binaryproblem.impl.AbstractBinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
 import it.uniud.relevancelist.program.Program.EvaluationFunction;
 
-public class RLBinaryProblem extends AbstractBinaryProblem {
+public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	
 	public static final int nVariables = 1;
 	public static final int nObjectives = 1;
@@ -32,7 +33,7 @@ public class RLBinaryProblem extends AbstractBinaryProblem {
 	}
 
 	@Override
-	public void evaluate(BinarySolution solution) {
+	public void evaluate(RLBinarySolution solution) {
 
 		// double actualValue = avg01Metric(solutionArray);
 		double actualValue = 100;
@@ -52,7 +53,7 @@ public class RLBinaryProblem extends AbstractBinaryProblem {
 		evaluateConstraints(solution);
 	}
 
-	private void evaluateConstraints(BinarySolution sol) {
+	private void evaluateConstraints(RLBinarySolution sol) {
 		double constraint;
 		BinarySet docs = sol.getVariable(0);
 		int numberOfRelevantDocs = 0;
@@ -74,7 +75,7 @@ public class RLBinaryProblem extends AbstractBinaryProblem {
 		return returnVal;
 	}
 
-	@Override
+
 	public List<Integer> getListOfBitsPerVariable() {
 		List<Integer> list = new ArrayList<Integer>();
 		for (int i = 0; i < getNumberOfVariables(); i++)
@@ -83,7 +84,7 @@ public class RLBinaryProblem extends AbstractBinaryProblem {
 	}
 	
 	@Override
-	public BinarySolution createSolution() {
+	public RLBinarySolution createSolution() {
 		return factory.generateNewSolution();
 	}
 	

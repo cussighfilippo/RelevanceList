@@ -15,13 +15,11 @@ import it.uniud.relevancelist.problem.RLBinarySolution;
 import it.uniud.relevancelist.problem.RLBinarySolutionFactory;
 import it.uniud.relevancelist.utils.*;
 
-import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.selection.*;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
-import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 
 /**
@@ -31,6 +29,20 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 public class Program
 {
 	public enum EvaluationFunction {avgPrecision, test};
+	
+	static int populationSize;
+	static int maxEvaluations;
+	static double crossoverProbability;
+	static double mutationProbability;
+	static int listLength;
+	static int maxCellValue;
+	static double targetValue;
+	static int relevantDocs;
+	static double maxErrTolerance;	
+	static int numExperimentIterations;
+	static EvaluationFunction evalFunction;
+	static String fileName;
+	static double fractNonZero;
 	
     /**
      * @param args
@@ -53,16 +65,16 @@ public class Program
 		
 		
 			
-		int populationSize = Integer.parseInt(args[0]);
-		int maxEvaluations = Integer.parseInt(args[1]);
-		double crossoverProbability = Double.parseDouble(args[2]);
-		double mutationProbability = Double.parseDouble(args[3]);
-		int listLength = Integer.parseInt(args[4]);
-		int maxCellValue = Integer.parseInt(args[5]);
-		double targetValue = Double.parseDouble(args[6]);
-		int relevantDocs = Integer.parseInt(args[7]);
-		double maxErrTolerance = Double.parseDouble(args[8]);	
-		int numExperimentIterations = Integer.parseInt(args[9]);
+		populationSize = Integer.parseInt(args[0]);
+	    maxEvaluations = Integer.parseInt(args[1]);
+		crossoverProbability = Double.parseDouble(args[2]);
+		mutationProbability = Double.parseDouble(args[3]);
+		listLength = Integer.parseInt(args[4]);
+		maxCellValue = Integer.parseInt(args[5]);
+		targetValue = Double.parseDouble(args[6]);
+		relevantDocs = Integer.parseInt(args[7]);
+		maxErrTolerance = Double.parseDouble(args[8]);	
+		numExperimentIterations = Integer.parseInt(args[9]);
 		// avg01Metric , avgPrecisionMetric , ndcgMetric
 		
 		if (!Arrays.stream(EvaluationFunction.values()).anyMatch((t) -> t.name().equals(args[10]))) {
@@ -70,9 +82,9 @@ public class Program
 			System.err.println("Valid functions: " + Arrays.toString(EvaluationFunction.values()));
 			System.exit(1);
 		};
-		EvaluationFunction evalFunction = EvaluationFunction.valueOf(args[10]);
-		String fileName = args[11];
-		double fractNonZero = Double.parseDouble(args[12]);
+		evalFunction = EvaluationFunction.valueOf(args[10]);
+		fileName = args[11];
+		fractNonZero = Double.parseDouble(args[12]);
 		
 		
 		// Fine lettura dei parametri
@@ -112,14 +124,14 @@ public class Program
     	// problem setup
     	
     	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(1, listLength, relevantDocs, distribution, fractNonZero);
-        BinaryProblem problem = new RLBinaryProblem(targetValue, evalFunction, factory);       
-        CrossoverOperator<BinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
-        MutationOperator<BinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
-        SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>(new RankingAndCrowdingDistanceComparator<BinarySolution>());
-        RLNSGAIIBuilder<BinarySolution> builder = new RLNSGAIIBuilder<BinarySolution>(problem, crossover, mutation, populationSize, maxErrTolerance);
+        RLBinaryProblem problem = new RLBinaryProblem(targetValue, evalFunction, factory);       
+        CrossoverOperator<RLBinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
+        MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
+        SelectionOperator<List<RLBinarySolution>, RLBinarySolution> selection = new BinaryTournamentSelection<RLBinarySolution>(new RankingAndCrowdingDistanceComparator<RLBinarySolution>());
+        RLNSGAIIBuilder<RLBinarySolution> builder = new RLNSGAIIBuilder(problem, crossover, mutation, populationSize, maxErrTolerance);
         builder.setSelectionOperator(selection);
         builder.setMaxEvaluations(maxEvaluations);
-        RLNSGAII<BinarySolution> algorithm; 
+        RLNSGAII<RLBinarySolution> algorithm; 
         
         
         
@@ -135,7 +147,7 @@ public class Program
         while( seed < numExperimentIterations && bestError > maxErrTolerance) { 
 	        algorithm = builder.build();
 	        algorithm.run();
-	        currentBestSolution = (RLBinarySolution) algorithm.getBestSolution();
+	        currentBestSolution = algorithm.getBestSolution();
 	        System.out.println((seed+1) + "° exp Solution" + "\t" + currentBestSolution.getVariable(0).toString() + "\t" + (currentBestSolution.getObjective(0)) + "\t" + currentBestSolution.getNumberOfRelevantDocs());
 	        System.out.println();
 	        if (bestSolution==null || currentBestSolution.getObjective(0)<bestSolution.getObjective(0) ) {
@@ -156,19 +168,28 @@ public class Program
 				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
 			    "\t" + bestSolution.getNumberOfRelevantDocs() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
 		outfile.close();
+
 		
-        
-        // stderror&co calc   - copiato dall'originale
-       
-		bestError = 10000000;
+		//Results printing on his file with original format
+		oldFilePrinting(solutions);
+		
+		
+		System.out.println("execution completed");
+		
+    }
+    
+    static void oldFilePrinting(List<RLBinarySolution> solutions) throws IOException {
+    	
+    	double bestError = 10000000;
 		int bestRelevantCount = -1;
 		double bestValue = 10000000;
 		String bestList = "UNDEF";
+        int listSize = solutions.size();
         
-		double[] vettoreErrori = new double[seed];	
-		double[] vettoreBestValues = new double[seed];
-		int[] vettoreRelevantCount = new int[seed];	
-		String[] vettoreListe = new String[seed];
+		double[] vettoreErrori = new double[listSize];	
+		double[] vettoreBestValues = new double[listSize];
+		int[] vettoreRelevantCount = new int[listSize];	
+		String[] vettoreListe = new String[listSize];
 		// int[] vettoreRelevantCountNONADM = new int[numExperimentIterations];	
 		
 		int counter = 0;
@@ -194,26 +215,19 @@ public class Program
 		double minError = Utils.getMinimum(vettoreErrori, counter);
 		double stddevRelError = Utils.getStddev(vettoreErrori, averageRelError, counter, validSolutionsCount);
         
-        
-		
-		// Results printing on his file
-		
-	  
-		filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + "esperimenti_genetico.csv";
-	    outfile = new FileWriter(filePath, true);
+
+
+        String PATH_SEPARATOR = System.getProperty("file.separator").toString();
+		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + "esperimenti_genetico.csv";
+	    FileWriter outfile = new FileWriter(filePath, true);
 		outfile.write("\n"+targetValue+","+relevantDocs +","+listLength +","+evalFunction.toString()+","+
 				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
 				counter+","+stddevRelError+","+averageRelError+","+minError+","+bestValue+","+bestRelevantCount+
 				","+ "\t"+bestList);
+	    
+		
 		outfile.close();
-		
-		
-		System.out.println("execution completed");
-		
     }
-    
-    
-
 
 	
 }

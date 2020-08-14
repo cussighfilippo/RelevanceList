@@ -7,7 +7,7 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import it.uniud.relevancelist.problem.RLBinarySolution;
 
-public class BinaryMutation implements MutationOperator<BinarySolution> {
+public class BinaryMutation implements MutationOperator<RLBinarySolution> {
 	
 	double probability;
 	JMetalRandom randomGenerator;
@@ -20,7 +20,7 @@ public class BinaryMutation implements MutationOperator<BinarySolution> {
 	}
 
 	@Override
-	public BinarySolution execute(BinarySolution solution) {
+	public RLBinarySolution execute(RLBinarySolution solution) {
 		if(randomGenerator.nextDouble() < probability){
 			if(randomGenerator.nextDouble() > 0.5){
 				swapMutation(solution);
@@ -33,7 +33,7 @@ public class BinaryMutation implements MutationOperator<BinarySolution> {
 		return null;
 	}
 	
-	public void swapMutation(BinarySolution solution) {
+	public void swapMutation(RLBinarySolution solution) {
 		BinarySet variable =  solution.getVariable(0);
 		//int swapIndex1 = (int) Math.round(PseudoRandom.randDouble()*(variable.getLength()-1));
 		//int swapIndex2 = (int) Math.round(PseudoRandom.randDouble()*(variable.getLength()-1));
@@ -41,14 +41,14 @@ public class BinaryMutation implements MutationOperator<BinarySolution> {
 		int swapIndex2 = distribution.sample();
 		boolean value1 = variable.get(swapIndex1);
 		boolean value2 = variable.get(swapIndex2);
-		((RLBinarySolution) solution).setBitValue(swapIndex1, value2);
-		((RLBinarySolution) solution).setBitValue(swapIndex2, value1);
+		solution.setBitValue(swapIndex1, value2);
+		solution.setBitValue(swapIndex2, value1);
 		
 	}
 	
-	public void sumMutation(BinarySolution solution) {
+	public void sumMutation(RLBinarySolution solution) {
 		int sumIndex = distribution.sample();
-		((RLBinarySolution) solution).setBitValue(sumIndex, true);
+		solution.setBitValue(sumIndex, true);
 	}
 	
 

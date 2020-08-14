@@ -12,25 +12,25 @@ import java.util.List;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 
-public class BinaryCrossover implements CrossoverOperator<BinarySolution>{
+public class BinaryCrossover implements CrossoverOperator<RLBinarySolution>{
 	
 	double crossoverProbability;
 	RLBinaryProblem problem;
 	
-	public BinaryCrossover(double crossoverProbability, BinaryProblem problem) {
+	public BinaryCrossover(double crossoverProbability, RLBinaryProblem problem) {
 		this.crossoverProbability = crossoverProbability;
-		this.problem = (RLBinaryProblem) problem;
+		this.problem = problem;
 	}
 
 	@Override
-	public List<BinarySolution> execute(List<BinarySolution> source) {
+	public List<RLBinarySolution> execute(List<RLBinarySolution> source) {
 		
-        RLBinarySolution firstSolution = (RLBinarySolution) source.get(0);
-        RLBinarySolution secondSolution = (RLBinarySolution) source.get(1);
+        RLBinarySolution firstSolution =  source.get(0);
+        RLBinarySolution secondSolution = source.get(1);
         boolean[] firstDocsStatus = firstSolution.retrieveDocsStatus();
         boolean[] secondDocsStatus = secondSolution.retrieveDocsStatus();
 
-        List<BinarySolution> childrenSolution = new ArrayList<BinarySolution>();
+        List<RLBinarySolution> childrenSolution = new ArrayList<RLBinarySolution>();
 
         RLBinarySolution firstChild = problem.getFactory().generateNewSolution();
         RLBinarySolution secondChild = problem.getFactory().generateNewSolution();
