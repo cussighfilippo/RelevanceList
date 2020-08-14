@@ -30,21 +30,21 @@ public class RLBinarySolutionFactory {
 	}
 	
 	public RLBinarySolution generateNewSolution() {
-		RLBinarySolution newSolution = new RLBinarySolution(createTopicSet());
+		RLBinarySolution newSolution = new RLBinarySolution(createDocumentsSet());
 		return newSolution;
 	}
 	
-	public RLBinarySolution generateNewSolution(boolean[] topics) {
-		if (topics.length != listLength) {
-			System.err.println(Arrays.toString(topics) + " incompatible with factory initialization");
-			System.err.println("topics length must match declared number of topics listLength of the factory");
+	public RLBinarySolution generateNewSolution(boolean[] docs) {
+		if (docs.length != listLength) {
+			System.err.println(Arrays.toString(docs) + " incompatible with factory initialization");
+			System.err.println("docs length must match declared number of documents listLength of the factory");
 			System.exit(1);
 		}
-		RLBinarySolution newSolution = new RLBinarySolution(topics);
+		RLBinarySolution newSolution = new RLBinarySolution(docs);
 		return newSolution;
 	}
 	
-	 private boolean[] createTopicSet() {
+	 private boolean[] createDocumentsSet() {
 
 		 	int[] array = new int[listLength];
 		    for (int i = 0; i < listLength ; i++) {

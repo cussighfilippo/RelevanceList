@@ -27,8 +27,8 @@ public class BinaryCrossover implements CrossoverOperator<BinarySolution>{
 		
         RLBinarySolution firstSolution = (RLBinarySolution) source.get(0);
         RLBinarySolution secondSolution = (RLBinarySolution) source.get(1);
-        boolean[] firstTopicStatus = firstSolution.retrieveTopicStatus();
-        boolean[] secondTopicStatus = secondSolution.retrieveTopicStatus();
+        boolean[] firstDocsStatus = firstSolution.retrieveDocsStatus();
+        boolean[] secondDocsStatus = secondSolution.retrieveDocsStatus();
 
         List<BinarySolution> childrenSolution = new ArrayList<BinarySolution>();
 
@@ -39,12 +39,12 @@ public class BinaryCrossover implements CrossoverOperator<BinarySolution>{
         
         if (JMetalRandom.getInstance().nextDouble() < crossoverProbability) {
 
-            for (int i=0; i<firstTopicStatus.length; i++) {
-                firstChild.setBitValue(i, firstTopicStatus[i] && secondTopicStatus[i]);
-                secondChild.setBitValue(i, firstTopicStatus[i] || secondTopicStatus[i]);
+            for (int i=0; i<firstDocsStatus.length; i++) {
+                firstChild.setBitValue(i, firstDocsStatus[i] && secondDocsStatus[i]);
+                secondChild.setBitValue(i, firstDocsStatus[i] || secondDocsStatus[i]);
             }
 
-            if (firstChild.getNumberOfSelectedTopics() == 0) {
+            if (firstChild.getNumberOfRelevantDocs() == 0) {
                 int flipIndex =(int) Math.floor(JMetalRandom.getInstance().nextDouble() * firstChild.getNumberOfBits(0));
                 if (flipIndex == firstChild.getNumberOfBits(0)) flipIndex -= 1;
                 firstChild.setBitValue(flipIndex, true);

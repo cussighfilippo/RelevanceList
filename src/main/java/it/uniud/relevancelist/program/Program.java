@@ -13,17 +13,15 @@ import it.uniud.relevancelist.operators.BinaryMutation;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
 import it.uniud.relevancelist.problem.RLBinarySolution;
 import it.uniud.relevancelist.problem.RLBinarySolutionFactory;
+import it.uniud.relevancelist.utils.*;
 
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
-import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.selection.*;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 
 /**
@@ -80,6 +78,7 @@ public class Program
 		// Fine lettura dei parametri
 		
 		//print parametri
+		
         System.out.println( "pop size:\t" + populationSize  );
         System.out.println( "max eval:\t" + maxEvaluations  );
         System.out.println( "crossover prob:\t" + crossoverProbability  );
@@ -96,6 +95,7 @@ public class Program
         System.out.println();
         
         
+        // copiato dall'originale 
     	// DETERMINO UNA DISTRIBUZIONE DI PROBABILITA' PER LA LISTA DEI RELEVANT DOCUMENT (USATA PER INIZIALIZZAZIONE E MUTATION)
     	int[] indexValues = new int[listLength];
     	for(int i=0; i<listLength; i++){
@@ -108,56 +108,112 @@ public class Program
     	}
     	EnumeratedIntegerDistribution distribution = new EnumeratedIntegerDistribution(indexValues, probabilities);
     	
+    	
+    	// problem setup
+    	
     	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(1, listLength, relevantDocs, distribution, fractNonZero);
-        BinaryProblem problem = new RLBinaryProblem(targetValue, evalFunction, factory);
-        
-//        RLBinarySolution[] solutions = new RLBinarySolution[2];
-//        boolean[] temp = {true, true, true, true, true, true, true, true, true, true};
-//        for (int i = 0; i < solutions.length; i++) {
-//        	solutions[i] = factory.generateNewSolution(temp);
-//        	problem.evaluate(solutions[i]);
-//        }
-//        Arrays.stream(solutions).forEach(s -> System.out.println(s.getVariable(0).toString()));
-//        System.out.println();
-        
+        BinaryProblem problem = new RLBinaryProblem(targetValue, evalFunction, factory);       
         CrossoverOperator<BinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
         MutationOperator<BinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
         SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>(new RankingAndCrowdingDistanceComparator<BinarySolution>());
-
- //      NSGAIIBuilder builder = new NSGAIIBuilder(problem, crossover, mutation, populationSize);
         RLNSGAIIBuilder<BinarySolution> builder = new RLNSGAIIBuilder<BinarySolution>(problem, crossover, mutation, populationSize, maxErrTolerance);
         builder.setSelectionOperator(selection);
         builder.setMaxEvaluations(maxEvaluations);
-        Algorithm<List<BinarySolution>> algorithm; 
+        RLNSGAII<BinarySolution> algorithm; 
+        
+        
+        
+        // evaluation
+        
+        
         RLBinarySolution currentBestSolution;
         RLBinarySolution bestSolution=null;
+        double bestError = Double.MAX_VALUE;
+        List<RLBinarySolution> solutions = new ArrayList<RLBinarySolution>();
         
-        for(int i=0; i < numExperimentIterations; i++) { 
+        int seed =0;
+        while( seed < numExperimentIterations && bestError > maxErrTolerance) { 
 	        algorithm = builder.build();
 	        algorithm.run();
-	        currentBestSolution = (RLBinarySolution)  ( (RLNSGAII) algorithm).getBestSolution();
-	        System.out.println((i+1) + "° exp Solution" + "\t" + currentBestSolution.getVariable(0).toString() + "\t" + (currentBestSolution.getObjective(0)) + "\t" + currentBestSolution.getNumberOfSelectedTopics());
+	        currentBestSolution = (RLBinarySolution) algorithm.getBestSolution();
+	        System.out.println((seed+1) + "° exp Solution" + "\t" + currentBestSolution.getVariable(0).toString() + "\t" + (currentBestSolution.getObjective(0)) + "\t" + currentBestSolution.getNumberOfRelevantDocs());
 	        System.out.println();
-	        if (bestSolution==null || currentBestSolution.getObjective(0)<bestSolution.getObjective(0) ) bestSolution = currentBestSolution;
+	        if (bestSolution==null || currentBestSolution.getObjective(0)<bestSolution.getObjective(0) ) {
+	        	bestSolution = currentBestSolution;
+	        	bestError = bestSolution.getObjective(0);
+	        }
+	        solutions.add(currentBestSolution);
+	        seed++;
         }
+        
+		// Results printing on my file
         
 
         String PATH_SEPARATOR = System.getProperty("file.separator").toString();
 		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + fileName;
 		FileWriter outfile = new FileWriter(filePath, true);
-//		outfile.write("\n"+targetValue+","+relevantDocs +","+listLength +","+evalFunction.toString()+","+
-//				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
-//				seed+","+stddevRelError+","+averageRelError+","+minError+","+bestValue+","+bestRelevantCount+
-//				","+ "\t"+bestList);
-		
 		outfile.write("\n" + targetValue+","+relevantDocs +","+listLength +","+evalFunction.toString()+","+
 				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
-			    "\t" + bestSolution.getNumberOfSelectedTopics() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
+			    "\t" + bestSolution.getNumberOfRelevantDocs() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
 		outfile.close();
+		
+        
+        // stderror&co calc   - copiato dall'originale
+       
+		bestError = 10000000;
+		int bestRelevantCount = -1;
+		double bestValue = 10000000;
+		String bestList = "UNDEF";
+        
+		double[] vettoreErrori = new double[seed];	
+		double[] vettoreBestValues = new double[seed];
+		int[] vettoreRelevantCount = new int[seed];	
+		String[] vettoreListe = new String[seed];
+		// int[] vettoreRelevantCountNONADM = new int[numExperimentIterations];	
+		
+		int counter = 0;
+		for(RLBinarySolution a : solutions) {
+			vettoreErrori[counter] = a.getObjective(0);
+			vettoreRelevantCount[counter] = a.getNumberOfRelevantDocs();
+			// vettoreRelevantCountNONADM[counter] = returnValues.bestNonAdmissibleDocsNumber;
+			vettoreBestValues[counter] = Math.abs(targetValue - a.getObjective(0));
+			vettoreListe[counter] = a.getVariable(0).toString();
+			
+			if(a.getObjective(0) < bestError) {
+				bestError = vettoreErrori[counter];
+				bestRelevantCount = vettoreRelevantCount[counter];
+				bestValue = vettoreBestValues[counter];
+				bestList = vettoreListe[counter];
+			}
+			counter++;
+		}
+        
+		int validSolutionsCount = counter;  //Tengo una lista di soluzioni, l'originale aveva un array fisso sul numero degli esperimenti
+											//quindi in caso di terminazione anticipata per errTolerance il resto dell'array era invalido
+		double averageRelError = Utils.getAverage(vettoreErrori, counter, validSolutionsCount);
+		double minError = Utils.getMinimum(vettoreErrori, counter);
+		double stddevRelError = Utils.getStddev(vettoreErrori, averageRelError, counter, validSolutionsCount);
+        
+        
+		
+		// Results printing on his file
+		
+	  
+		filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + "esperimenti_genetico.csv";
+	    outfile = new FileWriter(filePath, true);
+		outfile.write("\n"+targetValue+","+relevantDocs +","+listLength +","+evalFunction.toString()+","+
+				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
+				counter+","+stddevRelError+","+averageRelError+","+minError+","+bestValue+","+bestRelevantCount+
+				","+ "\t"+bestList);
+		outfile.close();
+		
 		
 		System.out.println("execution completed");
 		
     }
+    
+    
+
 
 	
 }

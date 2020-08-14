@@ -16,29 +16,29 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 	static final int nObjectives = RLBinaryProblem.nObjectives;
 	static final int nCostraints = RLBinaryProblem.nCostraints;
 	
-	private int numberOfSelectedTopics;
+	private int numberOfRelevantDocs;
 	
 
 	
-	RLBinarySolution(boolean[] topics) {
+	RLBinarySolution(boolean[] docsStatus) {
 		super(nVariables, nObjectives, nCostraints);
-		numberOfSelectedTopics = 0;
-		for(int i=0; i<topics.length; i++) if (topics[i]) numberOfSelectedTopics++;
-		setVariable(0, createNewBitSet(topics.length, topics));
+		numberOfRelevantDocs = 0;
+		for(int i=0; i<docsStatus.length; i++) if (docsStatus[i]) numberOfRelevantDocs++;
+		setVariable(0, createNewBitSet(docsStatus.length, docsStatus));
 	}
 	
-	RLBinarySolution(int numberOfTopics) {
+	RLBinarySolution(int numberOfDocs) {
 		super(nVariables, nObjectives, nCostraints);
-		boolean[] topics = new boolean[numberOfTopics];
-		for (int i = 0; i<numberOfTopics; i++) topics[i]= false;
+		boolean[] topics = new boolean[numberOfDocs];
+		for (int i = 0; i<numberOfDocs; i++) topics[i]= false;
 		setVariable(0, createNewBitSet(topics.length, topics));
-		numberOfSelectedTopics = 0;
+		numberOfRelevantDocs = 0;
 	}
 
 	
 	RLBinarySolution(RLBinarySolution solution) {
 		super(nVariables, nObjectives, nCostraints);
-		numberOfSelectedTopics = solution.numberOfSelectedTopics;
+		numberOfRelevantDocs = solution.numberOfRelevantDocs;
 		for (int i=0; i < this.getNumberOfVariables(); i++) this.setVariable(i,(BinarySet) solution.getVariable(i).clone());
 		for (int i=0; i < this.getNumberOfObjectives(); i++) this.setObjective(i, solution.getObjective(i));
 	}
@@ -67,12 +67,12 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
     }
     
     public void setBitValue(int index, boolean value) {
-        BinarySet topicStatusValues = getVariable(0);
-        if (topicStatusValues.get(index) != value) {
-            topicStatusValues.set(index, value);
-            if (value) numberOfSelectedTopics++; else numberOfSelectedTopics--;
+        BinarySet docsStatusValues = getVariable(0);
+        if (docsStatusValues.get(index) != value) {
+            docsStatusValues.set(index, value);
+            if (value) numberOfRelevantDocs++; else numberOfRelevantDocs--;
         }
-        setVariable(0, topicStatusValues);
+        setVariable(0, docsStatusValues);
     }
 
 
@@ -82,18 +82,18 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 	}
 	
 
-	public int getNumberOfSelectedTopics() {
-		return numberOfSelectedTopics;
+	public int getNumberOfRelevantDocs() {
+		return numberOfRelevantDocs;
 	}
 
-	public void setNumberOfSelectedTopics(int numberOfSelectedTopics) {
-		this.numberOfSelectedTopics = numberOfSelectedTopics;
+	public void setNumberOfRelevantDocs(int n) {
+		this.numberOfRelevantDocs = n;
 	}
 	
-    public boolean[] retrieveTopicStatus() {
-       boolean[] topicStatusValues = new boolean[(getVariable(0).getBinarySetLength())];
-        for (int i=0; i<getVariable(0).getBinarySetLength(); i++) topicStatusValues[i] = getVariable(0).get(i);
-        return topicStatusValues;
+    public boolean[] retrieveDocsStatus() {
+       boolean[] docsStatusValues = new boolean[(getVariable(0).getBinarySetLength())];
+        for (int i=0; i<getVariable(0).getBinarySetLength(); i++) docsStatusValues[i] = getVariable(0).get(i);
+        return docsStatusValues;
     }
 
 }
