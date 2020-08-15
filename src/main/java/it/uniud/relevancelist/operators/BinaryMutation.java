@@ -4,7 +4,6 @@ import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.util.binarySet.BinarySet;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
-import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import it.uniud.relevancelist.problem.RLBinarySolution;
 
 public class BinaryMutation implements MutationOperator<RLBinarySolution> {

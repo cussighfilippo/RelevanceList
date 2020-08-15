@@ -1,6 +1,5 @@
 package it.uniud.relevancelist.operators;
 
-import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import it.uniud.relevancelist.problem.RLBinaryProblem;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
-import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 
 public class BinaryCrossover implements CrossoverOperator<RLBinarySolution>{
 	

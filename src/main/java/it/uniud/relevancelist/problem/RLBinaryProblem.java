@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uma.jmetal.problem.AbstractGenericProblem;
-import org.uma.jmetal.problem.binaryproblem.impl.AbstractBinaryProblem;
-import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
 import it.uniud.relevancelist.program.Program.EvaluationFunction;
@@ -83,7 +81,6 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 		return list;
 	}
 	
-	@Override
 	public RLBinarySolution createSolution() {
 		return factory.generateNewSolution();
 	}

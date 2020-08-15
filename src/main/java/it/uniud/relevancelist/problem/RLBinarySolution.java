@@ -1,13 +1,11 @@
 package it.uniud.relevancelist.problem;
 
-import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
+
 import org.uma.jmetal.solution.AbstractSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
-import org.uma.jmetal.util.pseudorandom.*;
 
-import java.util.*;
 
 @SuppressWarnings("serial")
 public class RLBinarySolution extends AbstractSolution<BinarySet> implements BinarySolution{

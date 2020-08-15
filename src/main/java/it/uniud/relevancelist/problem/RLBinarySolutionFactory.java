@@ -80,7 +80,7 @@ public class RLBinarySolutionFactory {
 		    	indiciDistinti.add(x);
 		    }
 		    for(int  x : indiciDistinti){
-		    	indiciNonZero.remove(new Integer(x));
+		    	indiciNonZero.remove(Integer.valueOf(x));
 		    }
 		    if(indiciNonZero.size() > 0){
 		    	for(int x : indiciNonZero){
