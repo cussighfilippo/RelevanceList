@@ -10,6 +10,7 @@ import it.uniud.relevancelist.algorithm.RLNSGAII;
 import it.uniud.relevancelist.algorithm.RLNSGAIIBuilder;
 import it.uniud.relevancelist.operators.BinaryCrossover;
 import it.uniud.relevancelist.operators.BinaryMutation;
+import it.uniud.relevancelist.problem.EvaluationFunction;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
 import it.uniud.relevancelist.problem.RLBinarySolution;
 import it.uniud.relevancelist.problem.RLBinarySolutionFactory;
@@ -22,38 +23,33 @@ import org.uma.jmetal.operator.selection.*;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 
-/**
- * Hello world!
- *
- */
 public class Program
 {
-	public enum EvaluationFunction {avgPrecision, test};
-	
-	static int populationSize;
-	static int maxEvaluations;
+	static int populationSize;  
+	static int maxEvaluations; //	max evaluations of a NSGAII run
 	static double crossoverProbability;
 	static double mutationProbability;
-	static int listLength;
-	static int maxCellValue;
+	static int listLength;		//  length of the documents relevance list
+	static int maxCellValue;	//  max relevance value of a document
 	static double targetValue;
 	static int relevantDocs;
 	static double maxErrTolerance;	
 	static int numExperimentIterations;
-	static EvaluationFunction evalFunction;
+	static EvaluationFunction evalFunction;	//  available evaluation functions specified in its classfile
 	static String fileName;
-	static double fractNonZero;
+	static double fractNonZero;	//	fraction of non-zero relevance documents in new solution generation 
 	
     /**
-     * @param args
-     * @throws IOException 
+     * executes the experiment based on the 13 required arguments declared above
+     * saves the results in declared filename inside Target folder
+     * also saves the results in previous implementation's format in "esperimenti_genetico.csv" file
      */
     public static void main( String[] args ) throws IOException
     {
-
-    	
+  	
     	//cmdline  java -jar .\target\RelevanceList-1.0-SNAPSHOT-jar-with-dependencies.jar 50 50000 0.8 0.3 50 1 0.8957 6 0.00005 10 "avgPrecision" "risultati.csv" 0.1
-		// Lettura dei parametri
+		
+    	// Lettura dei parametri
 		
 		if(args.length != 13){
 			System.err.println("Wrong number of parameters specified: " + args.length + " != 13");
@@ -75,7 +71,6 @@ public class Program
 		relevantDocs = Integer.parseInt(args[7]);
 		maxErrTolerance = Double.parseDouble(args[8]);	
 		numExperimentIterations = Integer.parseInt(args[9]);
-		// avg01Metric , avgPrecisionMetric , ndcgMetric
 		
 		if (!Arrays.stream(EvaluationFunction.values()).anyMatch((t) -> t.name().equals(args[10]))) {
 			System.err.println("Invalid evaluation function: " + args[10]);
@@ -83,8 +78,10 @@ public class Program
 			System.exit(1);
 		};
 		evalFunction = EvaluationFunction.valueOf(args[10]);
+		
 		fileName = args[11];
 		fractNonZero = Double.parseDouble(args[12]);
+		
 		
 		
 		// Fine lettura dei parametri
@@ -107,15 +104,13 @@ public class Program
         System.out.println();
         
         
-        // copiato dall'originale 
-    	// DETERMINO UNA DISTRIBUZIONE DI PROBABILITA' PER LA LISTA DEI RELEVANT DOCUMENT (USATA PER INIZIALIZZAZIONE E MUTATION)
+        // distribution probability calculation. Used in new solutions generation and mutation operation 
     	int[] indexValues = new int[listLength];
     	for(int i=0; i<listLength; i++){
     		indexValues[i] = i;
     	}
     	double[] probabilities = new double[listLength];
     	for(int i=0; i<listLength; i++){
-    		//probabilities[i] = (float) 1.0/(i+1);
     		probabilities[i] = (float) 1.0/listLength;
     	}
     	EnumeratedIntegerDistribution distribution = new EnumeratedIntegerDistribution(indexValues, probabilities);
@@ -128,7 +123,7 @@ public class Program
         CrossoverOperator<RLBinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
         MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
         SelectionOperator<List<RLBinarySolution>, RLBinarySolution> selection = new BinaryTournamentSelection<RLBinarySolution>(new RankingAndCrowdingDistanceComparator<RLBinarySolution>());
-        RLNSGAIIBuilder<RLBinarySolution> builder = new RLNSGAIIBuilder(problem, crossover, mutation, populationSize, maxErrTolerance);
+        RLNSGAIIBuilder<RLBinarySolution> builder = new RLNSGAIIBuilder<RLBinarySolution>(problem, crossover, mutation, populationSize, maxErrTolerance);
         builder.setSelectionOperator(selection);
         builder.setMaxEvaluations(maxEvaluations);
         RLNSGAII<RLBinarySolution> algorithm; 
@@ -136,7 +131,6 @@ public class Program
         
         
         // evaluation
-        
         
         RLBinarySolution currentBestSolution;
         RLBinarySolution bestSolution=null;
@@ -148,7 +142,7 @@ public class Program
 	        algorithm = builder.build();
 	        algorithm.run();
 	        currentBestSolution = algorithm.getBestSolution();
-	        System.out.println((seed+1) + "° exp Solution" + "\t" + currentBestSolution.getVariable(0).toString() + "\t" + (currentBestSolution.getObjective(0)) + "\t" + currentBestSolution.getNumberOfRelevantDocs());
+	        System.out.println((seed+1) + "° experiment Solution" + "\t" + currentBestSolution.getVariable(0).toString() + "\t" + (currentBestSolution.getObjective(0)) + "\t" + currentBestSolution.getNumberOfRelevantDocs());
 	        System.out.println();
 	        if (bestSolution==null || currentBestSolution.getObjective(0)<bestSolution.getObjective(0) ) {
 	        	bestSolution = currentBestSolution;
@@ -164,7 +158,7 @@ public class Program
         String PATH_SEPARATOR = System.getProperty("file.separator").toString();
 		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + fileName;
 		FileWriter outfile = new FileWriter(filePath, true);
-		outfile.write("\n" + targetValue+","+relevantDocs +","+listLength +","+evalFunction.toString()+","+
+		outfile.write("\n" + targetValue+","+relevantDocs +","+listLength +"," + "population" + "," +evalFunction.toString()+","+
 				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
 			    "\t" + bestSolution.getNumberOfRelevantDocs() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
 		outfile.close();

@@ -7,7 +7,6 @@ import java.util.List;
 import org.uma.jmetal.problem.AbstractGenericProblem;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
-import it.uniud.relevancelist.program.Program.EvaluationFunction;
 
 public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	
@@ -30,27 +29,27 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 
 	}
 
+	// evaluates the solution and updates its objective and constraint values  
 	@Override
 	public void evaluate(RLBinarySolution solution) {
-
-		// double actualValue = avg01Metric(solutionArray);
 		double actualValue = 100;
 
 		switch (evalFun) {
 		case avgPrecision:
-			int bitSetLength = solution.getVariable(0).getBinarySetLength();
-			boolean[] solutionArray = new boolean[bitSetLength];
-			for (int i = 0; i < bitSetLength; i++)
-				solutionArray[i] = solution.getVariable(0).get(i);
-			actualValue = avgPrecisionMetric(solution.getVariable(0));
+			actualValue = avgPrecision(solution);
 			break;
 		default:
+			System.err.print("invalid evaluation function");
+			System.exit(1);
 		}
 
 		solution.setObjective(0, Math.abs(actualValue - targetValue));
 		evaluateConstraints(solution);
 	}
 
+	// constraint evaluation of RLBinarySolution
+	// solution's relevant documents cannot exceed the fixated value of the problem
+	// the constraint violation causes the solution to be dominated in the Pareto front calculation
 	private void evaluateConstraints(RLBinarySolution sol) {
 		double constraint;
 		BinarySet docs = sol.getVariable(0);
@@ -60,7 +59,10 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 		sol.setConstraint(0, constraint);
 	}
 
-	private double avgPrecisionMetric(BinarySet  bitSet) {
+	// returns the avgPrecision of the solution
+	// the solution's objective values are not modified by the method
+	private double avgPrecision(RLBinarySolution solution) {
+		BinarySet bitSet = solution.getVariable(0);
 		double returnValue = 0;
 		int nOnes = 0;
 		for (int i = 0; i < bitSet.getBinarySetLength(); i++) {
@@ -68,9 +70,8 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 				nOnes++;
 				returnValue = returnValue + ((double) nOnes / (i + 1));
 			}
-		}
-		double returnVal = returnValue / relevantDocs;
-		return returnVal;
+		} 
+		return returnValue / relevantDocs; 
 	}
 
 

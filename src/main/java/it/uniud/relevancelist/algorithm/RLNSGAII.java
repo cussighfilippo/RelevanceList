@@ -11,6 +11,9 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 
+// NSGAII subclass which overrides stopping condition
+// RLNSGAII evaluation stops if maxEvaluations are reached or if maximum error tolerance is reached
+
 public class RLNSGAII<S extends Solution<?>> extends NSGAII<S> {
 	
 	double bestFitness;

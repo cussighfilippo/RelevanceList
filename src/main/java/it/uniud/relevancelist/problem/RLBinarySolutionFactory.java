@@ -8,14 +8,16 @@ import java.util.Set;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
+//  Class for RLBinarySolution generation of fixated length
+//  New solutions generated without a relevance profile are based on the probability distribution given
 
 public class RLBinarySolutionFactory {
 	
-	int maxValue;
-	int listLength;
-	int relDocs;
-	EnumeratedIntegerDistribution distribution; 
-	double fractNonZero;
+	int maxValue;	//  max relevance value of a document
+	int listLength;	//  length of a Solution's relevance list
+	int relDocs;	//  number of relevant documents fixed for the problem
+	EnumeratedIntegerDistribution distribution; //  probability distribution 
+	double fractNonZero;	// fraction of non-zero relevance documents in new solution generation 
 	JMetalRandom randomGenerator;
 	
 
@@ -44,6 +46,8 @@ public class RLBinarySolutionFactory {
 		return newSolution;
 	}
 	
+	// generates a random relevance profile as a boolean array
+	// code for distribution's use is taken from previous Problem implementation 
 	 private boolean[] createDocumentsSet() {
 
 		 	int[] array = new int[listLength];

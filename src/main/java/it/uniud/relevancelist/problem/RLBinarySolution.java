@@ -10,6 +10,9 @@ import org.uma.jmetal.util.binarySet.BinarySet;
 @SuppressWarnings("serial")
 public class RLBinarySolution extends AbstractSolution<BinarySet> implements BinarySolution{
 
+	// solution's bounds get determined by the problem and shouldn't be modifiable
+	// implementation should be changed for reusability purposes
+	
 	static final int nVariables = RLBinaryProblem.nVariables;
 	static final int nObjectives = RLBinaryProblem.nObjectives;
 	static final int nCostraints = RLBinaryProblem.nCostraints;
@@ -17,7 +20,7 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 	private int numberOfRelevantDocs;
 	
 
-	
+	// creates a solution based on a given relevance list
 	RLBinarySolution(boolean[] docsStatus) {
 		super(nVariables, nObjectives, nCostraints);
 		numberOfRelevantDocs = 0;
@@ -25,6 +28,7 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 		setVariable(0, createNewBitSet(docsStatus.length, docsStatus));
 	}
 	
+	// creates a solution of numberOfDocs total documents retrieved
 	RLBinarySolution(int numberOfDocs) {
 		super(nVariables, nObjectives, nCostraints);
 		boolean[] topics = new boolean[numberOfDocs];
@@ -33,7 +37,7 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 		numberOfRelevantDocs = 0;
 	}
 
-	
+	// copy constructor
 	RLBinarySolution(RLBinarySolution solution) {
 		super(nVariables, nObjectives, nCostraints);
 		numberOfRelevantDocs = solution.numberOfRelevantDocs;
@@ -64,6 +68,7 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
         return bitSet;
     }
     
+    // updates a single value of variable(0)
     public void setBitValue(int index, boolean value) {
         BinarySet docsStatusValues = getVariable(0);
         if (docsStatusValues.get(index) != value) {
@@ -84,9 +89,6 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 		return numberOfRelevantDocs;
 	}
 
-	public void setNumberOfRelevantDocs(int n) {
-		this.numberOfRelevantDocs = n;
-	}
 	
     public boolean[] retrieveDocsStatus() {
        boolean[] docsStatusValues = new boolean[(getVariable(0).getBinarySetLength())];
