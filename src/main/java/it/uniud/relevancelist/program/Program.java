@@ -43,6 +43,10 @@ public class Program
      * executes the experiment based on the 13 required arguments declared above
      * saves the results in declared filename inside Target folder
      * also saves the results in previous implementation's format in "esperimenti_genetico.csv" file
+     * 
+     * the program runs the experiment displaying the best solution obtained per run 
+     * the overall best solution between those is saved in the mentioned files
+     * if a solution is valued to be better than the maximum error tolerance, the program stops
      */
     public static void main( String[] args ) throws IOException
     {

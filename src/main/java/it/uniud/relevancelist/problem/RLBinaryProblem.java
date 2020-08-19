@@ -52,9 +52,7 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	// the constraint violation causes the solution to be dominated in the Pareto front calculation
 	private void evaluateConstraints(RLBinarySolution sol) {
 		double constraint;
-		BinarySet docs = sol.getVariable(0);
-		int numberOfRelevantDocs = 0;
-		for (int i = 0; i < docs.getBinarySetLength(); i++)  if (docs.get(i)) numberOfRelevantDocs++;
+		int numberOfRelevantDocs = sol.getNumberOfRelevantDocs();
 		constraint = relevantDocs - numberOfRelevantDocs;
 		sol.setConstraint(0, constraint);
 	}
