@@ -10,6 +10,7 @@ import it.uniud.relevancelist.algorithm.RLNSGAII;
 import it.uniud.relevancelist.algorithm.RLNSGAIIBuilder;
 import it.uniud.relevancelist.operators.BinaryCrossover;
 import it.uniud.relevancelist.operators.BinaryMutation;
+import it.uniud.relevancelist.problem.DistributionMode;
 import it.uniud.relevancelist.problem.EvaluationFunction;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
 import it.uniud.relevancelist.problem.RLBinarySolution;
@@ -38,6 +39,7 @@ public class Program
 	static EvaluationFunction evalFunction;	//  available evaluation functions specified in its classfile
 	static String fileName;
 	static double fractNonZero;	//	fraction of non-zero relevance documents in new solution generation 
+	static DistributionMode distributionMode;
 	
     /**
      * executes the experiment based on the 13 required arguments declared above
@@ -55,8 +57,8 @@ public class Program
 		
     	// Lettura dei parametri
 		
-		if(args.length != 13){
-			System.err.println("Wrong number of parameters specified: " + args.length + " != 13");
+		if(args.length != 14){
+			System.err.println("Wrong number of parameters specified: " + args.length + " != 14");
 			System.err.println("Parameters: populationSize maxEvaluations crossoverProbability mutationProbability "
 								+ "listLength maxCellValue targetValue relevantDocs maxRelTolerance numExperimentIterations "
 								+ "funzioneValutazione filePath fractNonZero");
@@ -86,6 +88,13 @@ public class Program
 		fileName = args[11];
 		fractNonZero = Double.parseDouble(args[12]);
 		
+		if (!Arrays.stream(DistributionMode.values()).anyMatch((t) -> t.name().equals(args[13]))) {
+			System.err.println("Invalid distribution mode: " + args[13]);
+			System.err.println("Valid modes: " + Arrays.toString(DistributionMode.values()));
+			System.exit(1);
+		};
+		distributionMode = DistributionMode.valueOf(args[13]);
+		
 		
 		
 		// Fine lettura dei parametri
@@ -99,12 +108,13 @@ public class Program
         System.out.println( "list length:\t" + listLength  );
         System.out.println( "max cell value:\t" + maxCellValue  );
         System.out.println( "target value:\t" + targetValue  );
-        System.out.println( "relevanct docs:\t" + relevantDocs  );
+        System.out.println( "relevant docs:\t" + relevantDocs  );
         System.out.println( "max error:\t" + maxErrTolerance  );
         System.out.println( "n iterations:\t" + numExperimentIterations  );
         System.out.println( "funzione val:\t" + evalFunction.toString()  );
         System.out.println( "filename:\t" + fileName  );
         System.out.println( "fractNonZero:\t" + fractNonZero  );
+        System.out.println( "distr mode:\t" + distributionMode.toString()  );
         System.out.println();
         
         
@@ -122,7 +132,7 @@ public class Program
     	
     	// problem setup
     	
-    	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(1, listLength, relevantDocs, distribution, fractNonZero);
+    	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(1, listLength, relevantDocs, distribution, distributionMode, fractNonZero );
         RLBinaryProblem problem = new RLBinaryProblem(targetValue, evalFunction, factory);       
         CrossoverOperator<RLBinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
         MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
@@ -170,8 +180,7 @@ public class Program
 		
 		//Results printing on his file with original format
 		oldFilePrinting(solutions);
-		
-		
+    	
 		System.out.println("execution completed");
 		
     }
