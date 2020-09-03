@@ -8,6 +8,7 @@ import java.util.List;
 
 import it.uniud.relevancelist.algorithm.RLNSGAII;
 import it.uniud.relevancelist.algorithm.RLNSGAIIBuilder;
+import it.uniud.relevancelist.metric.AveragePrecisionEvaluator;
 import it.uniud.relevancelist.operators.BinaryCrossover;
 import it.uniud.relevancelist.operators.BinaryMutation;
 import it.uniud.relevancelist.problem.DistributionMode;
@@ -131,9 +132,18 @@ public class Program
     	
     	
     	// problem setup
+    	AveragePrecisionEvaluator evaluator = new AveragePrecisionEvaluator(relevantDocs);
+
+		switch (evalFunction) {
+			case avgPrecision:
+				evaluator = new AveragePrecisionEvaluator(relevantDocs);
+				break;
+			default:
+				System.err.println("should not end up here");
+		}
     	
     	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(1, listLength, relevantDocs, distribution, distributionMode, fractNonZero );
-        RLBinaryProblem problem = new RLBinaryProblem(targetValue, evalFunction, factory);       
+        RLBinaryProblem problem = new RLBinaryProblem(targetValue, evaluator, factory);       
         CrossoverOperator<RLBinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
         MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
         SelectionOperator<List<RLBinarySolution>, RLBinarySolution> selection = new BinaryTournamentSelection<RLBinarySolution>(new RankingAndCrowdingDistanceComparator<RLBinarySolution>());

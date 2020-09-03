@@ -7,6 +7,7 @@ import java.util.List;
 import org.uma.jmetal.problem.AbstractGenericProblem;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
+import it.uniud.relevancelist.metric.MetricEvaluator;
 import it.uniud.relevancelist.solution.RLBinarySolution;
 import it.uniud.relevancelist.solution.RLBinarySolutionFactory;
 
@@ -18,14 +19,14 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	public static final int nCostraints = 1;
 
 	private double targetValue;
-	private EvaluationFunction evalFun;
+	private MetricEvaluator evaluator;
 	private int relevantDocs;
 	private int listLength;
 	private RLBinarySolutionFactory factory;
 
-	public RLBinaryProblem(double targetValue, EvaluationFunction evalFun, RLBinarySolutionFactory fac) {
+	public RLBinaryProblem(double targetValue, MetricEvaluator eval, RLBinarySolutionFactory fac) {
 		this.targetValue = targetValue;
-		this.evalFun = evalFun;
+		this.evaluator = eval;
 		this.relevantDocs = fac.getRelevantDocs();
 		this.listLength = fac.getListLength();
 		this.factory = fac;
@@ -36,16 +37,7 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	@Override
 	public void evaluate(RLBinarySolution solution) {
 		double actualValue = 100;
-
-		switch (evalFun) {
-		case avgPrecision:
-			actualValue = avgPrecision(solution);
-			break;
-		default:
-			System.err.print("invalid evaluation function");
-			System.exit(1);
-		}
-
+	    actualValue = evaluator.evaluate(solution);
 		solution.setObjective(0, Math.abs(actualValue - targetValue));
 		evaluateConstraints(solution);
 	}
@@ -60,8 +52,7 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 		sol.setConstraint(0, constraint);
 	}
 
-	// returns the avgPrecision of the solution
-	// the solution's objective values are not modified by the method
+
 	private double avgPrecision(RLBinarySolution solution) {
 		BinarySet bitSet = solution.getVariable(0);
 		double returnValue = 0;
@@ -89,6 +80,10 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	
 	public RLBinarySolutionFactory getFactory() {
 		return factory;
+	}
+
+	public double getRelevantDocs() {
+		return relevantDocs;
 	}
 	
 }
