@@ -1,10 +1,12 @@
-package it.uniud.relevancelist.problem;
+package it.uniud.relevancelist.solution;
 
 
 import org.uma.jmetal.solution.AbstractSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
+
+import it.uniud.relevancelist.problem.RLBinaryProblem;
 
 
 @SuppressWarnings("serial")

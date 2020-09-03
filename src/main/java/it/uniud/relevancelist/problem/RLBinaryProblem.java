@@ -7,6 +7,9 @@ import java.util.List;
 import org.uma.jmetal.problem.AbstractGenericProblem;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
+import it.uniud.relevancelist.solution.RLBinarySolution;
+import it.uniud.relevancelist.solution.RLBinarySolutionFactory;
+
 
 public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	

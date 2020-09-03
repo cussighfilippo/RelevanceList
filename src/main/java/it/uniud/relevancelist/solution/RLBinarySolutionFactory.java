@@ -1,4 +1,4 @@
-package it.uniud.relevancelist.problem;
+package it.uniud.relevancelist.solution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+
+import it.uniud.relevancelist.problem.DistributionMode;
 
 //  Class for RLBinarySolution generation of fixated length
 //  New solutions generated without a relevance profile are based on the probability distribution given

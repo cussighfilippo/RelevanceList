@@ -13,8 +13,8 @@ import it.uniud.relevancelist.operators.BinaryMutation;
 import it.uniud.relevancelist.problem.DistributionMode;
 import it.uniud.relevancelist.problem.EvaluationFunction;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
-import it.uniud.relevancelist.problem.RLBinarySolution;
-import it.uniud.relevancelist.problem.RLBinarySolutionFactory;
+import it.uniud.relevancelist.solution.RLBinarySolution;
+import it.uniud.relevancelist.solution.RLBinarySolutionFactory;
 import it.uniud.relevancelist.utils.*;
 
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;

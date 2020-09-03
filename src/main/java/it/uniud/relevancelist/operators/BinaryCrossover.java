@@ -3,7 +3,7 @@ package it.uniud.relevancelist.operators;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import it.uniud.relevancelist.problem.RLBinaryProblem;
-import it.uniud.relevancelist.problem.RLBinarySolution;
+import it.uniud.relevancelist.solution.RLBinarySolution;
 
 import java.util.ArrayList;
 import java.util.List;
