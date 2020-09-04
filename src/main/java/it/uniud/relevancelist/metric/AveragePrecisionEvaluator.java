@@ -1,8 +1,6 @@
 package it.uniud.relevancelist.metric;
 
 import org.uma.jmetal.util.binarySet.BinarySet;
-
-import it.uniud.relevancelist.problem.RLBinaryProblem;
 import it.uniud.relevancelist.solution.RLBinarySolution;
 
 public class AveragePrecisionEvaluator extends MetricEvaluator{
@@ -13,6 +11,7 @@ public class AveragePrecisionEvaluator extends MetricEvaluator{
 		relevantDocs = relDocs;
 	}
 
+	//returns average precision of the given solution without changing its objective value
 	public double evaluate(RLBinarySolution solution) {
 		BinarySet bitSet = solution.getVariable(0);
 		double returnValue = 0;

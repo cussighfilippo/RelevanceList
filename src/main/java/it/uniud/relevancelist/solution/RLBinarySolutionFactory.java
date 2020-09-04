@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
-import it.uniud.relevancelist.problem.DistributionMode;
 
 //  Class for RLBinarySolution generation of fixated length
 //  New solutions generated without a relevance profile are based on the probability distribution given
@@ -18,18 +17,16 @@ public class RLBinarySolutionFactory {
 	int maxValue; // max relevance value of a document
 	int listLength; // length of a Solution's relevance list
 	int relDocs; // number of relevant documents fixed for the problem
-	EnumeratedIntegerDistribution distribution; // probability distribution
+	EnumeratedIntegerDistribution initDistribution; // probability distribution
 	double fractNonZero; // fraction of non-zero relevance documents in new solution generation
 	JMetalRandom randomGenerator;
-	DistributionMode distMode;
 
 	public RLBinarySolutionFactory(int maxValue, int size, int relDocs, EnumeratedIntegerDistribution distribution,
-			DistributionMode mode, double fractNonZero) {
+			 double fractNonZero) {
 		this.maxValue = maxValue;
 		this.listLength = size;
 		this.relDocs = relDocs;
-		this.distribution = distribution;
-		this.distMode = mode;
+		this.initDistribution = distribution;
 		this.fractNonZero = fractNonZero;
 		randomGenerator = JMetalRandom.getInstance();
 
@@ -75,12 +72,9 @@ public class RLBinarySolutionFactory {
 			howManyNotZero = relDocs;
 		}
 
-		switch (distMode) {
+		// soluzione uniforme senza l'utilizzo della distribuzione
 
-		// variante uniforme
-		case uniform: {
-
-			ArrayList<String> indiciDaProvare = new ArrayList<String>();
+/*			ArrayList<String> indiciDaProvare = new ArrayList<String>();
 			for (int i = 0; i < listLength; i++) {
 				indiciDaProvare.add(i + "");
 			}
@@ -92,13 +86,11 @@ public class RLBinarySolutionFactory {
 				int cellValue = (int) Math.round(randomGenerator.nextDouble() * (maxValue - 1)) + 1;
 				array[cellIndex] = cellValue;
 			}
-			break;
-		}
+		
 
-		// variante geometrica
-		case geometric: {
+*/
 			ArrayList<Integer> indiciNonZero = new ArrayList<Integer>();
-			int[] temp = distribution.sample(howManyNotZero);
+			int[] temp = initDistribution.sample(howManyNotZero);
 			for (int i = 0; i < temp.length; i++) {
 				indiciNonZero.add(temp[i]);
 			}
@@ -124,18 +116,11 @@ public class RLBinarySolutionFactory {
 				int cellValue = (int) Math.round(randomGenerator.nextDouble() * (maxValue - 1)) + 1;
 				array[cellIndex] = cellValue;
 			}
-			break;
-		}
-		default:
-			System.err.println("unrecognized distribution mode");
-			System.exit(1);
-		}
 
-		// soluzione temporanea per tenere il codice originale
 
 		boolean[] booleanArray = new boolean[array.length];
 		for (int i = 0; i < array.length; i++)
-			if (array[i] == 1)
+			if (array[i] >= 1)
 				booleanArray[i] = true;
 			else
 				booleanArray[i] = false;

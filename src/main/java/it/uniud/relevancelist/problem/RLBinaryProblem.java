@@ -53,20 +53,6 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	}
 
 
-	private double avgPrecision(RLBinarySolution solution) {
-		BinarySet bitSet = solution.getVariable(0);
-		double returnValue = 0;
-		int nOnes = 0;
-		for (int i = 0; i < bitSet.getBinarySetLength(); i++) {
-			if (bitSet.get(i)) {
-				nOnes++;
-				returnValue = returnValue + ((double) nOnes / (i + 1));
-			}
-		} 
-		return returnValue / relevantDocs; 
-	}
-
-
 	public List<Integer> getListOfBitsPerVariable() {
 		List<Integer> list = new ArrayList<Integer>();
 		for (int i = 0; i < getNumberOfVariables(); i++)

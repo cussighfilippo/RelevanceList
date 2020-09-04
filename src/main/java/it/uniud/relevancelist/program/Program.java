@@ -11,8 +11,6 @@ import it.uniud.relevancelist.algorithm.RLNSGAIIBuilder;
 import it.uniud.relevancelist.metric.AveragePrecisionEvaluator;
 import it.uniud.relevancelist.operators.BinaryCrossover;
 import it.uniud.relevancelist.operators.BinaryMutation;
-import it.uniud.relevancelist.problem.DistributionMode;
-import it.uniud.relevancelist.problem.EvaluationFunction;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
 import it.uniud.relevancelist.solution.RLBinarySolution;
 import it.uniud.relevancelist.solution.RLBinarySolutionFactory;
@@ -40,7 +38,8 @@ public class Program
 	static EvaluationFunction evalFunction;	//  available evaluation functions specified in its classfile
 	static String fileName;
 	static double fractNonZero;	//	fraction of non-zero relevance documents in new solution generation 
-	static DistributionMode distributionMode;
+	static DistributionType initializationDistributionType;
+	static DistributionType mutationDistributionType;
 	
     /**
      * executes the experiment based on the 13 required arguments declared above
@@ -54,15 +53,16 @@ public class Program
     public static void main( String[] args ) throws IOException
     {
   	
-    	//cmdline  java -jar .\target\RelevanceList-1.0-SNAPSHOT-jar-with-dependencies.jar 50 50000 0.8 0.3 50 1 0.8957 6 0.00005 10 "avgPrecision" "risultati.csv" 0.1 "geometric"
+    	//cmdline  java -jar .\target\RelevanceList-1.0-SNAPSHOT-jar-with-dependencies.jar 50 50000 0.8 0.3 50 1 0.8957 6 0.00005 10 "avgPrecision" "risultati.csv" 0.1 "geometric" "geometric"
 		
     	// Lettura dei parametri
 		
-		if(args.length != 14){
-			System.err.println("Wrong number of parameters specified: " + args.length + " != 14");
+		if(args.length != 15){
+			System.err.println("Wrong number of parameters specified: " + args.length + " != 15");
 			System.err.println("Parameters: populationSize maxEvaluations crossoverProbability mutationProbability "
 								+ "listLength maxCellValue targetValue relevantDocs maxRelTolerance numExperimentIterations "
-								+ "funzioneValutazione filePath fractNonZero");
+								+ "funzioneValutazione filePath fractNonZero "
+								+ "initializationDistributionType mutationDistributionType");
 			System.exit(1);
 		}
 		
@@ -89,12 +89,20 @@ public class Program
 		fileName = args[11];
 		fractNonZero = Double.parseDouble(args[12]);
 		
-		if (!Arrays.stream(DistributionMode.values()).anyMatch((t) -> t.name().equals(args[13]))) {
-			System.err.println("Invalid distribution mode: " + args[13]);
-			System.err.println("Valid modes: " + Arrays.toString(DistributionMode.values()));
+		if (!Arrays.stream(DistributionType.values()).anyMatch((t) -> t.name().equals(args[13]))) {
+			System.err.println("Invalid initialization distribution type: " + args[13]);
+			System.err.println("Valid types: " + Arrays.toString(DistributionType.values()));
 			System.exit(1);
 		};
-		distributionMode = DistributionMode.valueOf(args[13]);
+		
+		if (!Arrays.stream(DistributionType.values()).anyMatch((t) -> t.name().equals(args[14]))) {
+			System.err.println("Invalid mutation distribution type: " + args[14]);
+			System.err.println("Valid types: " + Arrays.toString(DistributionType.values()));
+			System.exit(1);
+		};
+		
+		initializationDistributionType = DistributionType.valueOf(args[13]);
+		mutationDistributionType = DistributionType.valueOf(args[14]);
 		
 		
 		
@@ -115,37 +123,68 @@ public class Program
         System.out.println( "funzione val:\t" + evalFunction.toString()  );
         System.out.println( "filename:\t" + fileName  );
         System.out.println( "fractNonZero:\t" + fractNonZero  );
-        System.out.println( "distr mode:\t" + distributionMode.toString()  );
+        System.out.println( "init dist type:\t" + initializationDistributionType.toString()  );
+        System.out.println( "mut dist type:\t" + mutationDistributionType.toString()  );
         System.out.println();
         
         
-        // distribution probability calculation. Used in new solutions generation and mutation operation 
+        // distribution probabilities calculation. Used in new solutions generation and mutation operation 
     	int[] indexValues = new int[listLength];
     	for(int i=0; i<listLength; i++){
     		indexValues[i] = i;
     	}
-    	double[] probabilities = new double[listLength];
+    	double[] uniformProbabilities = new double[listLength];
+    	double[] geometricProbabilities = new double[listLength];
     	for(int i=0; i<listLength; i++){
-    		probabilities[i] = (float) 1.0/listLength;
+    		uniformProbabilities[i] = (float) 1.0/listLength;
+    		geometricProbabilities[i] = (float) 1.0/(i+1);
     	}
-    	EnumeratedIntegerDistribution distribution = new EnumeratedIntegerDistribution(indexValues, probabilities);
+    	EnumeratedIntegerDistribution uniformDistribution = new EnumeratedIntegerDistribution(indexValues, uniformProbabilities);
+    	EnumeratedIntegerDistribution geometricDistribution = new EnumeratedIntegerDistribution(indexValues, geometricProbabilities);
     	
     	
     	// problem setup
+    	// variables must be consistent between classes initializations
     	AveragePrecisionEvaluator evaluator = new AveragePrecisionEvaluator(relevantDocs);
 
 		switch (evalFunction) {
-			case avgPrecision:
-				evaluator = new AveragePrecisionEvaluator(relevantDocs);
-				break;
-			default:
-				System.err.println("should not end up here");
+		case avgPrecision:
+			evaluator = new AveragePrecisionEvaluator(relevantDocs);
+			break;
+		default:
+			System.err.println("should not end up here");
 		}
+		
+		EnumeratedIntegerDistribution initializationDistribution = geometricDistribution;
+		EnumeratedIntegerDistribution mutationDistribution = uniformDistribution;
+		
+		switch (initializationDistributionType) {
+		case uniform:
+			initializationDistribution = uniformDistribution;
+			break;
+		case geometric:
+			initializationDistribution = geometricDistribution;
+			break;
+		default:
+			System.err.println("should not end up here");
+		}
+		
+		switch (mutationDistributionType) {
+		case uniform:
+			mutationDistribution = uniformDistribution;
+			break;
+		case geometric:
+			mutationDistribution = geometricDistribution;
+			break;
+		default:
+			System.err.println("should not end up here");
+		}
+
     	
-    	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(1, listLength, relevantDocs, distribution, distributionMode, fractNonZero );
+    	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(2, listLength, relevantDocs, initializationDistribution, fractNonZero );
         RLBinaryProblem problem = new RLBinaryProblem(targetValue, evaluator, factory);       
         CrossoverOperator<RLBinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
-        MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, distribution);
+        MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, mutationDistribution);
         SelectionOperator<List<RLBinarySolution>, RLBinarySolution> selection = new BinaryTournamentSelection<RLBinarySolution>(new RankingAndCrowdingDistanceComparator<RLBinarySolution>());
         RLNSGAIIBuilder<RLBinarySolution> builder = new RLNSGAIIBuilder<RLBinarySolution>(problem, crossover, mutation, populationSize, maxErrTolerance);
         builder.setSelectionOperator(selection);
@@ -182,15 +221,27 @@ public class Program
         String PATH_SEPARATOR = System.getProperty("file.separator").toString();
 		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + fileName;
 		FileWriter outfile = new FileWriter(filePath, true);
-		outfile.write("\n" + targetValue+","+relevantDocs +","+listLength +"," + "population" + "," +evalFunction.toString()+","+
-				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
-			    "\t" + bestSolution.getNumberOfRelevantDocs() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
+//		outfile.write("\n" + targetValue+","+relevantDocs +","+listLength +"," + "population" + "," +evalFunction.toString()+","+
+//				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
+//			    "\t" + bestSolution.getNumberOfRelevantDocs() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
+		
+//		for(int i=0; i<2000; i++) {
+//			outfile.write("\n" );
+//			for (int j =0; j < listLength ; j++) {
+//				RLBinarySolution s = factory.generateNewSolution();
+//				int a;
+//				if (s.getVariable(0).get(j)) a =1;
+//				else a = 0;
+//				outfile.write(a + "\t");
+//			}
+//		}
+
+		
 		outfile.close();
 
 		
-		//Results printing on his file with original format
+		//Results printing on old file with original format
 		oldFilePrinting(solutions);
-    	
 		System.out.println("execution completed");
 		
     }
@@ -207,13 +258,11 @@ public class Program
 		double[] vettoreBestValues = new double[listSize];
 		int[] vettoreRelevantCount = new int[listSize];	
 		String[] vettoreListe = new String[listSize];
-		// int[] vettoreRelevantCountNONADM = new int[numExperimentIterations];	
 		
 		int counter = 0;
 		for(RLBinarySolution a : solutions) {
 			vettoreErrori[counter] = a.getObjective(0);
 			vettoreRelevantCount[counter] = a.getNumberOfRelevantDocs();
-			// vettoreRelevantCountNONADM[counter] = returnValues.bestNonAdmissibleDocsNumber;
 			vettoreBestValues[counter] = Math.abs(targetValue - a.getObjective(0));
 			vettoreListe[counter] = a.getVariable(0).toString();
 			
@@ -226,8 +275,7 @@ public class Program
 			counter++;
 		}
         
-		int validSolutionsCount = counter;  //Tengo una lista di soluzioni, l'originale aveva un array fisso sul numero degli esperimenti
-											//quindi in caso di terminazione anticipata per errTolerance il resto dell'array era invalido
+		int validSolutionsCount = counter;  
 		double averageRelError = Utils.getAverage(vettoreErrori, counter, validSolutionsCount);
 		double minError = Utils.getMinimum(vettoreErrori, counter);
 		double stddevRelError = Utils.getStddev(vettoreErrori, averageRelError, counter, validSolutionsCount);
