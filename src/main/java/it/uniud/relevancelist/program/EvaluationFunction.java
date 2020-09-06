@@ -1,3 +1,3 @@
 package it.uniud.relevancelist.program;
 
-public enum EvaluationFunction {avgPrecision, test}
+public enum EvaluationFunction {avgPrecision, ndcg}

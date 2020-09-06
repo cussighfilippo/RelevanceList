@@ -9,6 +9,8 @@ import java.util.List;
 import it.uniud.relevancelist.algorithm.RLNSGAII;
 import it.uniud.relevancelist.algorithm.RLNSGAIIBuilder;
 import it.uniud.relevancelist.metric.AveragePrecisionEvaluator;
+import it.uniud.relevancelist.metric.MetricEvaluator;
+import it.uniud.relevancelist.metric.NDCGEvaluator;
 import it.uniud.relevancelist.operators.BinaryCrossover;
 import it.uniud.relevancelist.operators.BinaryMutation;
 import it.uniud.relevancelist.problem.RLBinaryProblem;
@@ -38,8 +40,8 @@ public class Program
 	static EvaluationFunction evalFunction;	//  available evaluation functions specified in its classfile
 	static String fileName;
 	static double fractNonZero;	//	fraction of non-zero relevance documents in new solution generation 
-	static DistributionType initializationDistributionType;
-	static DistributionType mutationDistributionType;
+	static DistributionType initializationDistributionType;  // geometric or uniform distribution 
+	static DistributionType mutationDistributionType;	 // geometric or uniform distribution 
 	
     /**
      * executes the experiment based on the 13 required arguments declared above
@@ -74,6 +76,12 @@ public class Program
 		mutationProbability = Double.parseDouble(args[3]);
 		listLength = Integer.parseInt(args[4]);
 		maxCellValue = Integer.parseInt(args[5]);
+		
+		if(maxCellValue != 1) {
+			System.err.println("maxCellValue !=1 : program is based on the binary version of the problem");
+			System.exit(1);
+		}
+			
 		targetValue = Double.parseDouble(args[6]);
 		relevantDocs = Integer.parseInt(args[7]);
 		maxErrTolerance = Double.parseDouble(args[8]);	
@@ -145,11 +153,14 @@ public class Program
     	
     	// problem setup
     	// variables must be consistent between classes initializations
-    	AveragePrecisionEvaluator evaluator = new AveragePrecisionEvaluator(relevantDocs);
+    	MetricEvaluator evaluator = new AveragePrecisionEvaluator(relevantDocs);
 
 		switch (evalFunction) {
 		case avgPrecision:
 			evaluator = new AveragePrecisionEvaluator(relevantDocs);
+			break;
+		case ndcg:
+			evaluator = new NDCGEvaluator();
 			break;
 		default:
 			System.err.println("should not end up here");
