@@ -31,6 +31,9 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 		this.listLength = fac.getListLength();
 		this.factory = fac;
 
+		this.setNumberOfConstraints(nCostraints);
+		this.setNumberOfVariables(nVariables);
+		this.setNumberOfObjectives(nObjectives);
 	}
 
 	// evaluates the solution and updates its objective and constraint values  
