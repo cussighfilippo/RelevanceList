@@ -11,28 +11,22 @@ import it.uniud.relevancelist.problem.RLBinaryProblem;
 
 @SuppressWarnings("serial")
 public class RLBinarySolution extends AbstractSolution<BinarySet> implements BinarySolution{
-
-	// solution's bounds get determined by the problem and shouldn't be modifiable
-	// implementation should be changed for reusability purposes
 	
-	static final int nVariables = RLBinaryProblem.nVariables;
-	static final int nObjectives = RLBinaryProblem.nObjectives;
-	static final int nCostraints = RLBinaryProblem.nCostraints;
 	
 	private int numberOfRelevantDocs;
 	
 
 	// creates a solution based on a given relevance list
-	RLBinarySolution(boolean[] docsStatus) {
-		super(nVariables, nObjectives, nCostraints);
+	RLBinarySolution(int nVariables, int nObjectives, int nConstraints, boolean[] docsStatus) {
+		super(nVariables, nObjectives, nConstraints);
 		numberOfRelevantDocs = 0;
 		for(int i=0; i<docsStatus.length; i++) if (docsStatus[i]) numberOfRelevantDocs++;
 		setVariable(0, createNewBitSet(docsStatus.length, docsStatus));
 	}
 	
 	// creates a solution of numberOfDocs total documents retrieved
-	RLBinarySolution(int numberOfDocs) {
-		super(nVariables, nObjectives, nCostraints);
+	RLBinarySolution(int nVariables, int nObjectives, int nConstraints, int numberOfDocs) {
+		super(nVariables, nObjectives, nConstraints);
 		boolean[] topics = new boolean[numberOfDocs];
 		for (int i = 0; i<numberOfDocs; i++) topics[i]= false;
 		setVariable(0, createNewBitSet(topics.length, topics));
@@ -41,7 +35,7 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 
 	// copy constructor
 	RLBinarySolution(RLBinarySolution solution) {
-		super(nVariables, nObjectives, nCostraints);
+		super(solution.getNumberOfVariables(),solution.getNumberOfObjectives(), solution.getNumberOfConstraints());
 		numberOfRelevantDocs = solution.numberOfRelevantDocs;
 		for (int i=0; i < this.getNumberOfVariables(); i++) this.setVariable(i,(BinarySet) solution.getVariable(i).clone());
 		for (int i=0; i < this.getNumberOfObjectives(); i++) this.setObjective(i, solution.getObjective(i));

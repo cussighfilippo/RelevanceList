@@ -14,9 +14,6 @@ import it.uniud.relevancelist.solution.RLBinarySolutionFactory;
 
 public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 	
-	public static final int nVariables = 1;
-	public static final int nObjectives = 1;
-	public static final int nCostraints = 1;
 
 	private double targetValue;
 	private MetricEvaluator evaluator;
@@ -31,9 +28,9 @@ public class RLBinaryProblem extends AbstractGenericProblem<RLBinarySolution> {
 		this.listLength = fac.getListLength();
 		this.factory = fac;
 
-		this.setNumberOfConstraints(nCostraints);
-		this.setNumberOfVariables(nVariables);
-		this.setNumberOfObjectives(nObjectives);
+		this.setNumberOfConstraints(fac.getnConstraints());
+		this.setNumberOfVariables(fac.getnVariables());
+		this.setNumberOfObjectives(fac.getnObjectives());
 	}
 
 	// evaluates the solution and updates its objective and constraint values  

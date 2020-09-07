@@ -13,12 +13,19 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 //  New solutions generated without a relevance profile are based on the probability distribution given
 
 public class RLBinarySolutionFactory {
+	
+	//solution's number of variables, objectives and constraints 
+	int nVariables = 1;
+	int nObjectives = 1;
+	int nConstraints = 1;
 
 	int maxValue; // max relevance value of a document
 	int listLength; // length of a Solution's relevance list
 	int relDocs; // number of relevant documents fixed for the problem
 	EnumeratedIntegerDistribution initDistribution; // probability distribution
 	double fractNonZero; // fraction of non-zero relevance documents in new solution generation
+	
+
 	JMetalRandom randomGenerator;
 
 	public RLBinarySolutionFactory(int maxValue, int size, int relDocs, EnumeratedIntegerDistribution distribution,
@@ -33,7 +40,7 @@ public class RLBinarySolutionFactory {
 	}
 
 	public RLBinarySolution generateNewSolution() {
-		RLBinarySolution newSolution = new RLBinarySolution(createDocumentsSet());
+		RLBinarySolution newSolution = new RLBinarySolution(nVariables, nObjectives, nConstraints, createDocumentsSet());
 		return newSolution;
 	}
 
@@ -43,7 +50,7 @@ public class RLBinarySolutionFactory {
 			System.err.println("docs length must match declared number of documents listLength of the factory");
 			System.exit(1);
 		}
-		RLBinarySolution newSolution = new RLBinarySolution(docs);
+		RLBinarySolution newSolution = new RLBinarySolution(nVariables, nObjectives, nConstraints,docs);
 		return newSolution;
 	}
 
@@ -133,5 +140,29 @@ public class RLBinarySolutionFactory {
 
 	public int getRelevantDocs() {
 		return relDocs;
+	}
+	
+	public int getNumberOfVariables() {
+		return nVariables;
+	}
+
+	public void setNumberOfVariables(int nVariables) {
+		this.nVariables = nVariables;
+	}
+
+	public int getNumberOfObjectives() {
+		return nObjectives;
+	}
+
+	public void setNumberOfObjectives(int nObjectives) {
+		this.nObjectives = nObjectives;
+	}
+
+	public int getNumberOfConstraints() {
+		return nConstraints;
+	}
+
+	public void setNumberOfConstraints(int nConstraints) {
+		this.nConstraints = nConstraints;
 	}
 }
