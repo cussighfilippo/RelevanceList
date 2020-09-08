@@ -192,7 +192,7 @@ public class Program
 		}
 
     	
-    	RLBinarySolutionFactory factory = new RLBinarySolutionFactory(2, listLength, relevantDocs, initializationDistribution, fractNonZero );
+    	RLBinarySolutionFactory factory = new RLBinarySolutionFactory( listLength, relevantDocs, initializationDistribution, fractNonZero );
         RLBinaryProblem problem = new RLBinaryProblem(targetValue, evaluator, factory);       
         CrossoverOperator<RLBinarySolution> crossover = new BinaryCrossover(crossoverProbability, problem);
         MutationOperator<RLBinarySolution> mutation = new BinaryMutation(mutationProbability, mutationDistribution);

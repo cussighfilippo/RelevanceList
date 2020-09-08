@@ -28,9 +28,9 @@ public class RLBinarySolutionFactory {
 
 	JMetalRandom randomGenerator;
 
-	public RLBinarySolutionFactory(int maxValue, int size, int relDocs, EnumeratedIntegerDistribution distribution,
+	public RLBinarySolutionFactory(int size, int relDocs, EnumeratedIntegerDistribution distribution,
 			 double fractNonZero) {
-		this.maxValue = maxValue;
+		this.maxValue = 1;
 		this.listLength = size;
 		this.relevantDocs = relDocs;
 		this.initDistribution = distribution;
