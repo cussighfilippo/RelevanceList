@@ -21,7 +21,7 @@ public class RLBinarySolutionFactory {
 
 	int maxValue; // max relevance value of a document
 	int listLength; // length of a Solution's relevance list
-	int relDocs; // number of relevant documents fixed for the problem
+	int relevantDocs; // number of relevant documents fixed for the problem
 	EnumeratedIntegerDistribution initDistribution; // probability distribution
 	double fractNonZero; // fraction of non-zero relevance documents in new solution generation
 	
@@ -32,7 +32,7 @@ public class RLBinarySolutionFactory {
 			 double fractNonZero) {
 		this.maxValue = maxValue;
 		this.listLength = size;
-		this.relDocs = relDocs;
+		this.relevantDocs = relDocs;
 		this.initDistribution = distribution;
 		this.fractNonZero = fractNonZero;
 		randomGenerator = JMetalRandom.getInstance();
@@ -40,7 +40,7 @@ public class RLBinarySolutionFactory {
 	}
 
 	public RLBinarySolution generateNewSolution() {
-		RLBinarySolution newSolution = new RLBinarySolution(nVariables, nObjectives, nConstraints, createDocumentsSet());
+		RLBinarySolution newSolution = new RLBinarySolution(nVariables, nObjectives, nConstraints, createRelevanceSet());
 		return newSolution;
 	}
 
@@ -56,7 +56,7 @@ public class RLBinarySolutionFactory {
 
 	// generates a random relevance profile as a boolean array
 	// code for distribution's use is taken from previous Problem implementation
-	private boolean[] createDocumentsSet() {
+	private boolean[] createRelevanceSet() {
 
 		int[] array = new int[listLength];
 		for (int i = 0; i < listLength; i++) {
@@ -72,11 +72,11 @@ public class RLBinarySolutionFactory {
 			// sottrai
 			fracNonZeroRelevant = fracNonZeroRelevant - shiftValue;
 		}
-		int howManyNotZero = (int) Math.round(fracNonZeroRelevant * relDocs);
+		int howManyNotZero = (int) Math.round(fracNonZeroRelevant * relevantDocs);
 		if (howManyNotZero == 0) {
 			howManyNotZero++;
-		} else if (howManyNotZero > relDocs) {
-			howManyNotZero = relDocs;
+		} else if (howManyNotZero > relevantDocs) {
+			howManyNotZero = relevantDocs;
 		}
 
 		// soluzione uniforme senza l'utilizzo della distribuzione
@@ -139,7 +139,7 @@ public class RLBinarySolutionFactory {
 	}
 
 	public int getRelevantDocs() {
-		return relDocs;
+		return relevantDocs;
 	}
 	
 	public int getNumberOfVariables() {
