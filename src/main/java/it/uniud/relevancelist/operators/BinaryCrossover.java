@@ -38,14 +38,14 @@ public class BinaryCrossover implements CrossoverOperator<RLBinarySolution>{
         if (JMetalRandom.getInstance().nextDouble() < crossoverProbability) {
 
             for (int i=0; i<firstDocsStatus.length; i++) {
-                firstChild.setBitValue(i, firstDocsStatus[i] && secondDocsStatus[i]);
-                secondChild.setBitValue(i, firstDocsStatus[i] || secondDocsStatus[i]);
+                firstChild.setBitValue(0, i, firstDocsStatus[i] && secondDocsStatus[i]);
+                secondChild.setBitValue(0, i, firstDocsStatus[i] || secondDocsStatus[i]);
             }
 
             if (firstChild.getNumberOfRelevantDocs() == 0) {
                 int flipIndex =(int) Math.floor(JMetalRandom.getInstance().nextDouble() * firstChild.getNumberOfBits(0));
                 if (flipIndex == firstChild.getNumberOfBits(0)) flipIndex -= 1;
-                firstChild.setBitValue(flipIndex, true);
+                firstChild.setBitValue(0, flipIndex, true);
             }
 
         }

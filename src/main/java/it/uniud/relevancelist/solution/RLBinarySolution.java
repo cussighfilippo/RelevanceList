@@ -65,8 +65,8 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
     }
     
     // updates a single value of variable(0)
-    public void setBitValue(int index, boolean value) {
-        BinarySet docsStatusValues = getVariable(0);
+    public void setBitValue(int variable, int index, boolean value) {
+        BinarySet docsStatusValues = getVariable(variable);
         if (docsStatusValues.get(index) != value) {
             docsStatusValues.set(index, value);
             if (value) numberOfRelevantDocs++; else numberOfRelevantDocs--;
@@ -83,6 +83,12 @@ public class RLBinarySolution extends AbstractSolution<BinarySet> implements Bin
 
 	public int getNumberOfRelevantDocs() {
 		return numberOfRelevantDocs;
+	}
+	
+	@Override
+	public void setVariable(int i, BinarySet set) {
+		super.setVariable(i, set);
+		if(i == 0) numberOfRelevantDocs = set.cardinality();
 	}
 
 	

@@ -41,14 +41,14 @@ public class BinaryMutation implements MutationOperator<RLBinarySolution> {
 		int swapIndex2 = distribution.sample();
 		boolean value1 = variable.get(swapIndex1);
 		boolean value2 = variable.get(swapIndex2);
-		solution.setBitValue(swapIndex1, value2);
-		solution.setBitValue(swapIndex2, value1);
+		solution.setBitValue(0, swapIndex1, value2);
+		solution.setBitValue(0, swapIndex2, value1);
 		
 	}
 	
 	public void sumMutation(RLBinarySolution solution) {
 		int sumIndex = distribution.sample();
-		solution.setBitValue(sumIndex, true);
+		solution.setBitValue(0, sumIndex, true);
 	}
 	
 
