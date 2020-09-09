@@ -226,38 +226,14 @@ public class Program
 	        seed++;
         }
         
-		// Results printing on my file
-        
 
-        String PATH_SEPARATOR = System.getProperty("file.separator").toString();
-		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + fileName;
-		FileWriter outfile = new FileWriter(filePath, true);
-//		outfile.write("\n" + targetValue+","+relevantDocs +","+listLength +"," + "population" + "," +evalFunction.toString()+","+
-//				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
-//			    "\t" + bestSolution.getNumberOfRelevantDocs() +","+ bestSolution.getObjective(0) +"," +bestSolution.getVariable(0).toString());
-		
-//		for(int i=0; i<2000; i++) {
-//			outfile.write("\n" );
-//			for (int j =0; j < listLength ; j++) {
-//				RLBinarySolution s = factory.generateNewSolution();
-//				int a;
-//				if (s.getVariable(0).get(j)) a =1;
-//				else a = 0;
-//				outfile.write(a + "\t");
-//			}
-//		}
-
-		
-		outfile.close();
-
-		
-		//Results printing on old file with original format
-		oldFilePrinting(solutions);
+		//Results printing on  file with original format
+		filePrinting(solutions);
 		System.out.println("execution completed");
 		
     }
     
-    static void oldFilePrinting(List<RLBinarySolution> solutions) throws IOException {
+    static void filePrinting(List<RLBinarySolution> solutions) throws IOException {
     	
     	double bestError = 10000000;
 		int bestRelevantCount = -1;
@@ -294,7 +270,7 @@ public class Program
 
 
         String PATH_SEPARATOR = System.getProperty("file.separator").toString();
-		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + "esperimenti_genetico.csv";
+		String filePath =  System.getProperty("user.dir") + PATH_SEPARATOR + "Target" + PATH_SEPARATOR + fileName;
 	    FileWriter outfile = new FileWriter(filePath, true);
 		outfile.write("\n"+targetValue+","+relevantDocs +","+listLength +","+evalFunction.toString()+","+
 				crossoverProbability+","+mutationProbability+","+maxEvaluations+","+maxErrTolerance+","+
