@@ -1,4 +1,4 @@
-package it.uniud.relevancelist.operators;
+package it.uniud.relevancelist.operator;
 
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
