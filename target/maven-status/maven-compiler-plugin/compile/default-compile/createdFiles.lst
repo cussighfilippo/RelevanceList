@@ -1,10 +1,7 @@
-it\uniud\relevancelist\problem\RLBinarySolution.class
 it\uniud\relevancelist\program\Program.class
-it\uniud\relevancelist\problem\RLBinaryProblem$1.class
-it\uniud\relevancelist\problem\RLBinarySolutionFactory.class
+it\uniud\relevancelist\operator\BinaryCrossover.class
+it\uniud\relevancelist\program\Program$1.class
+it\uniud\relevancelist\operator\BinaryMutation.class
 it\uniud\relevancelist\problem\RLBinaryProblem.class
 it\uniud\relevancelist\algorithm\RLNSGAII.class
 it\uniud\relevancelist\algorithm\RLNSGAIIBuilder.class
-it\uniud\relevancelist\operators\BinaryMutation.class
-it\uniud\relevancelist\operators\BinaryCrossover.class
-it\uniud\relevancelist\program\Program$EvaluationFunction.class
